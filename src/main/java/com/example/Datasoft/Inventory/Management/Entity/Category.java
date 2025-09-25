@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "categories")
-public class Categories {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,9 +24,9 @@ public class Categories {
 
 
     //Default Constructor
-    public Categories() {}
+    public Category() {}
 
-    public Categories(String name, String code, Status status) {
+    public Category(String name, String code, Status status) {
         this.name = name;
         this.code = code;
         this.created_at = LocalDateTime.now();

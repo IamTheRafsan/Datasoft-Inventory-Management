@@ -25,9 +25,6 @@ public class Products {
     @Column(name = "category_id", nullable = false)
     private Long categoryId;
 
-    @Column(nullable = false)
-    private LocalDateTime date;
-
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -111,6 +108,10 @@ public class Products {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {
