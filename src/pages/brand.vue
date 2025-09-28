@@ -57,14 +57,14 @@ interface Brand {
         Add New Brand
       </router-link>
 
-      <div class="search-bar">
+      <!-- <div class="search-bar">
         <input
           type="text"
           placeholder="Search brands..."
           class="search-input"
         />
         <span class="search-icon">🔍</span>
-      </div>
+      </div> -->
      </div>
 
      <!-- Brand Table -->

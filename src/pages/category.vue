@@ -56,14 +56,14 @@ interface Category {
         Add New Category
       </router-link>
 
-      <div class="search-bar">
+      <!-- <div class="search-bar">
         <input
           type="text"
           placeholder="Search Category..."
           class="search-input"
         />
         <span class="search-icon">🔍</span>
-      </div>
+      </div> -->
      </div>
 
      <!-- Brand Table -->

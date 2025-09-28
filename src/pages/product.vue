@@ -107,14 +107,14 @@ onMounted(() => {
         <span class="button-icon">+</span>
         Add New Product
       </router-link>
-      <div class="search-bar">
+      <!-- <div class="search-bar">
         <input
           type="text"
           placeholder="Search products..."
           class="search-input"
         />
         <span class="search-icon">🔍</span>
-      </div>
+      </div> -->
     </div>
 
     <!-- Product Table -->
