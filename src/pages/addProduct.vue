@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import api from "../axios";
 
@@ -13,7 +13,31 @@ const categoryId = ref<number | null>(null);
 const description = ref("");
 const status = ref("Available");
 
-// Handle form submit
+// Data for category and brand dropdowns
+const brands = ref<{ id: number; name: string; code: string }[]>([]);
+const categories = ref<{ id: number; name: string; code: string }[]>([]);
+
+// Fetch brands for dropdown
+const fetchBrands = async () => {
+  try {
+    const response = await api.get("/brand");
+    brands.value = response.data;
+  } catch (error) {
+    console.error("Error fetching brands:", error);
+  }
+};
+
+// Fetch categories for dropdown
+const fetchCategories = async () => {
+  try {
+    const response = await api.get("/category");
+    categories.value = response.data;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+};
+
+// Form submit
 const submitForm = async () => {
   if (!name.value || !code.value || !brandId.value || !categoryId.value) {
     alert("Please fill all required fields!");
@@ -36,8 +60,13 @@ const submitForm = async () => {
     alert("Failed to add product.");
   }
 };
-</script>
 
+// Fetch data when component mounts
+onMounted(() => {
+  fetchBrands();
+  fetchCategories();
+});
+</script>
 
 <template>
   <div class="form-container">
@@ -55,7 +84,7 @@ const submitForm = async () => {
           <span class="card-icon">📝</span>
           <h2 class="card-title">Basic Information</h2>
         </div>
-        
+
         <div class="form-grid">
           <div class="input-group">
             <label class="input-label">
@@ -67,7 +96,7 @@ const submitForm = async () => {
               class="form-input"
               placeholder="Enter product name"
             />
-            <span class="input-icon">🏷️</span>
+            <span class="input-icon"></span>
           </div>
 
           <div class="input-group">
@@ -80,7 +109,7 @@ const submitForm = async () => {
               class="form-input"
               placeholder="Enter unique code"
             />
-            <span class="input-icon">🔢</span>
+            <span class="input-icon"></span>
           </div>
         </div>
       </div>
@@ -91,39 +120,43 @@ const submitForm = async () => {
           <span class="card-icon">🏷️</span>
           <h2 class="card-title">Category & Brand</h2>
         </div>
-        
+
         <div class="form-grid">
           <div class="input-group">
             <label class="input-label">
-              Brand ID <span class="required">*</span>
+              Brand <span class="required">*</span>
             </label>
-            <div class="input-with-button">
-              <input
-                v-model.number="brandId"
-                type="number"
-                class="form-input"
-                placeholder="Enter brand ID"
-              />
-              <button type="button" class="browse-button" title="Browse brands">
-                📋
-              </button>
+            <div class="select-container">
+              <select v-model.number="brandId" class="form-select" required>
+                <option value="" disabled>Select a brand</option>
+                <option
+                  v-for="brand in brands"
+                  :key="brand.id"
+                  :value="brand.id"
+                >
+                  {{ brand.name }} ({{ brand.code }})
+                </option>
+              </select>
+              <span class="select-icon">⭐</span>
             </div>
           </div>
 
           <div class="input-group">
             <label class="input-label">
-              Category ID <span class="required">*</span>
+              Category <span class="required">*</span>
             </label>
-            <div class="input-with-button">
-              <input
-                v-model.number="categoryId"
-                type="number"
-                class="form-input"
-                placeholder="Enter category ID"
-              />
-              <button type="button" class="browse-button" title="Browse categories">
-                📋
-              </button>
+            <div class="select-container">
+              <select v-model.number="categoryId" class="form-select" required>
+                <option value="" disabled>Select a category</option>
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.id"
+                >
+                  {{ category.name }} ({{ category.code }})
+                </option>
+              </select>
+              <span class="select-icon">📂</span>
             </div>
           </div>
         </div>
@@ -135,7 +168,7 @@ const submitForm = async () => {
           <span class="card-icon">📋</span>
           <h2 class="card-title">Additional Details</h2>
         </div>
-        
+
         <div class="input-group">
           <label class="input-label">Description</label>
           <div class="textarea-container">
@@ -152,8 +185,8 @@ const submitForm = async () => {
         <div class="input-group">
           <label class="input-label">Status</label>
           <div class="status-selector">
-            <label 
-              v-for="option in ['Available', 'Soldout', 'Lowstock']" 
+            <label
+              v-for="option in ['Available', 'Soldout', 'Lowstock']"
               :key="option"
               :class="['status-option', { active: status === option }]"
             >
@@ -184,17 +217,15 @@ const submitForm = async () => {
         </div>
       </div>
     </form>
-
   </div>
 </template>
-
 
 <style scoped>
 .form-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Header Styles */
@@ -313,10 +344,9 @@ const submitForm = async () => {
   top: 50%;
   transform: translateY(-50%);
   color: #9ca3af;
-  
 }
 
-/* Input with Button */ 
+/* Input with Button */
 .input-with-button {
   position: relative;
   display: flex;
@@ -484,28 +514,96 @@ const submitForm = async () => {
   .form-container {
     padding: 1rem;
   }
-  
+
   .form-actions {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .action-buttons {
     width: 100%;
     justify-content: stretch;
   }
-  
-  .draft-button, .submit-button {
+
+  .draft-button,
+  .submit-button {
     flex: 1;
     justify-content: center;
   }
-  
+
   .progress-steps {
     gap: 1rem;
   }
-  
+
   .step-label {
     font-size: 0.8rem;
   }
+}
+
+/* dropdown styles */
+
+.select-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-select {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: #fafafa;
+  box-sizing: border-box;
+  appearance: none;
+  cursor: pointer;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #10b981;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-select:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.select-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* Custom dropdown arrow */
+.select-container::after {
+  content: "▼";
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+/* Loading state for dropdowns */
+.loading-text {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Option styling */
+.form-select option {
+  padding: 0.5rem;
+  background: white;
 }
 </style>

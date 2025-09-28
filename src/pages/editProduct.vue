@@ -20,6 +20,30 @@ const status = ref("Available");
 const isLoading = ref(true);
 const isUpdating = ref(false);
 
+// Data for category and brand dropdowns
+const brands = ref<{ id: number; name: string; code: string }[]>([]);
+const categories = ref<{ id: number; name: string; code: string }[]>([]);
+
+// Fetch brands for dropdown
+const fetchBrands = async () => {
+  try {
+    const response = await api.get("/brand");
+    brands.value = response.data;
+  } catch (error) {
+    console.error("Error fetching brands:", error);
+  }
+};
+
+// Fetch categories for dropdown
+const fetchCategories = async () => {
+  try {
+    const response = await api.get("/category");
+    categories.value = response.data;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+};
+
 // Fetch product data by ID
 const fetchProduct = async () => {
   try {
@@ -68,6 +92,8 @@ const updateProduct = async () => {
 
 onMounted(() => {
   fetchProduct();
+  fetchBrands();
+  fetchCategories();
 });
 </script>
 
@@ -105,7 +131,7 @@ onMounted(() => {
           <span class="section-icon">📋</span>
           <h2 class="section-title">Product Information</h2>
         </div>
-        
+
         <div class="form-grid">
           <div class="input-group">
             <label class="input-label">
@@ -118,7 +144,7 @@ onMounted(() => {
               placeholder="Enter product name"
               required
             />
-            <span class="input-icon">🏷️</span>
+            <span class="input-icon"></span>
           </div>
 
           <div class="input-group">
@@ -132,52 +158,54 @@ onMounted(() => {
               placeholder="Enter unique code"
               required
             />
-            <span class="input-icon">🔢</span>
+            <span class="input-icon"></span>
           </div>
         </div>
       </div>
 
       <!-- Category & Brand Card -->
       <div class="form-section">
-        <div class="section-header">
-          <span class="section-icon">🏷️</span>
-          <h2 class="section-title">Category & Brand</h2>
+        <div class="card-header">
+          <span class="card-icon">🏷️</span>
+          <h2 class="card-title">Category & Brand</h2>
         </div>
-        
+
         <div class="form-grid">
           <div class="input-group">
             <label class="input-label">
-              Brand ID <span class="required">*</span>
+              Brand <span class="required">*</span>
             </label>
-            <div class="input-with-button">
-              <input
-                v-model.number="brandId"
-                type="number"
-                class="form-input"
-                placeholder="Enter brand ID"
-                required
-              />
-              <button type="button" class="browse-button" title="Browse brands">
-                📋
-              </button>
+            <div class="select-container">
+              <select v-model.number="brandId" class="form-select" required>
+                <option value="" disabled>Select a brand</option>
+                <option
+                  v-for="brand in brands"
+                  :key="brand.id"
+                  :value="brand.id"
+                >
+                  {{ brand.name }} ({{ brand.code }})
+                </option>
+              </select>
+              <span class="select-icon">⭐</span>
             </div>
           </div>
 
           <div class="input-group">
             <label class="input-label">
-              Category ID <span class="required">*</span>
+              Category <span class="required">*</span>
             </label>
-            <div class="input-with-button">
-              <input
-                v-model.number="categoryId"
-                type="number"
-                class="form-input"
-                placeholder="Enter category ID"
-                required
-              />
-              <button type="button" class="browse-button" title="Browse categories">
-                📋
-              </button>
+            <div class="select-container">
+              <select v-model.number="categoryId" class="form-select" required>
+                <option value="" disabled>Select a category</option>
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.id"
+                >
+                  {{ category.name }} ({{ category.code }})
+                </option>
+              </select>
+              <span class="select-icon">📂</span>
             </div>
           </div>
         </div>
@@ -189,7 +217,7 @@ onMounted(() => {
           <span class="section-icon">📝</span>
           <h2 class="section-title">Additional Details</h2>
         </div>
-        
+
         <div class="input-group">
           <label class="input-label">Description</label>
           <div class="textarea-container">
@@ -206,8 +234,8 @@ onMounted(() => {
         <div class="input-group">
           <label class="input-label">Status</label>
           <div class="status-selector">
-            <label 
-              v-for="option in ['Available', 'Lowstock', 'Soldout']" 
+            <label
+              v-for="option in ['Available', 'Lowstock', 'Soldout']"
               :key="option"
               :class="['status-option', { active: status === option }]"
             >
@@ -224,39 +252,29 @@ onMounted(() => {
         </div>
       </div>
 
-
       <!-- Form Actions -->
       <div class="form-actions">
         <div class="action-buttons">
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="cancel-button"
             @click="router.push('/product')"
           >
             <span class="button-icon">×</span>
             Cancel
           </button>
-          <button 
-            type="button" 
-            class="reset-button"
-            @click="fetchProduct"
-          >
+          <button type="button" class="reset-button" @click="fetchProduct">
             <span class="button-icon">↺</span>
             Reset Changes
           </button>
-          <button 
-            type="submit" 
-            class="update-button"
-            :disabled="isUpdating"
-          >
+          <button type="submit" class="update-button" :disabled="isUpdating">
             <span class="button-icon" v-if="!isUpdating">✓</span>
             <span class="loading-spinner-small" v-else></span>
-            {{ isUpdating ? 'Updating...' : 'Update Product' }}
+            {{ isUpdating ? "Updating..." : "Update Product" }}
           </button>
         </div>
       </div>
     </form>
-
   </div>
 </template>
 
@@ -265,7 +283,7 @@ onMounted(() => {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Header Styles */
@@ -355,8 +373,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Form Sections */
@@ -608,7 +630,9 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
-.cancel-button, .reset-button, .update-button {
+.cancel-button,
+.reset-button,
+.update-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -689,24 +713,90 @@ onMounted(() => {
   gap: 1rem;
 }
 
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .edit-container {
     padding: 1rem;
   }
-  
+
   .action-buttons {
     flex-direction: column;
   }
-  
+
   .header-info {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .product-id {
     align-self: center;
   }
+}
+
+/* dropdown styles */
+
+.select-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-select {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: #fafafa;
+  box-sizing: border-box;
+  appearance: none;
+  cursor: pointer;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #10b981;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-select:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.select-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* Custom dropdown arrow */
+.select-container::after {
+  content: "▼";
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+/* Loading state for dropdowns */
+.loading-text {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Option styling */
+.form-select option {
+  padding: 0.5rem;
+  background: white;
 }
 </style>

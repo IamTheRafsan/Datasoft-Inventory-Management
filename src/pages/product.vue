@@ -1,3 +1,98 @@
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import api from "../axios";
+
+interface Product {
+  id?: number;
+  name: string;
+  code: string;
+  brandId: number;
+  categoryId: number;
+  description: string;
+  status: string;
+}
+
+const products = ref<Product[]>([]);
+
+// Data for category and brand dropdowns
+const brands = ref<{ id: number; name: string; code: string }[]>([]);
+const categories = ref<{ id: number; name: string; code: string }[]>([]);
+
+// Fetch products
+const fetchProducts = async () => {
+  try {
+    const response = await api.get("/product");
+    products.value = response.data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+};
+
+// Fetch brands for dropdown
+const fetchBrands = async () => {
+  try {
+    const response = await api.get("/brand");
+    brands.value = response.data;
+  } catch (error) {
+    console.error("Error fetching brands:", error);
+  }
+};
+
+// Fetch categories for dropdown
+const fetchCategories = async () => {
+  try {
+    const response = await api.get("/category");
+    categories.value = response.data;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+};
+
+
+// get brand names
+const getBrandName = (brandId: number) => {
+  const brand = brands.value.find(b => b.id === brandId);
+  return brand ? brand.name : `Brand #${brandId}`;
+};
+
+//get category names
+const getCategoryName = (categoryId: number) => {
+  const category = categories.value.find(c => c.id === categoryId);
+  return category ? category.name : `Category #${categoryId}`;
+};
+
+// Get brand code for additional info
+const getBrandCode = (brandId: number) => {
+  const brandCode = brands.value.find(b => b.id === brandId);
+  return brandCode ? brandCode.code : '';
+};
+
+// Get category code for additional info
+const getCategoryCode = (categoryId: number) => {
+  const categoryCode = categories.value.find(c => c.id === categoryId);
+  return categoryCode ? categoryCode.code : '';
+};
+
+
+//Delete product
+const deleteProduct = async (id: number) => {
+  if (confirm("Are you sure you want to delete this product?")) {
+    try {
+      await api.delete(`/product/delete/${id}`);
+      fetchProducts();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  }
+};
+
+onMounted(() => {
+  fetchProducts();
+  fetchBrands();
+  fetchCategories();
+});
+</script>
+
 <template>
   <div class="container">
     <!-- Header Section -->
@@ -47,8 +142,16 @@
             <td class="table-cell code-cell">
               <span class="code-badge">{{ p.code }}</span>
             </td>
-            <td class="table-cell brand-cell">{{ p.brandId }}</td>
-            <td class="table-cell category-cell">{{ p.categoryId }}</td>
+            <td class="table-cell brand-cell">
+              <div class="brand-info">
+                <span class="brand-name">{{ getBrandName(p.brandId) }}</span>
+              </div>
+            </td>
+            <td class="table-cell category-cell">
+              <div class="category-info">
+                <span class="category-name">{{ getCategoryName(p.categoryId) }}</span>
+              </div>
+            </td>
             <td class="table-cell status-cell">
               <span
                 :class="[
@@ -96,49 +199,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-import api from "../axios";
-
-interface Product {
-  id?: number;
-  name: string;
-  code: string;
-  brandId: number;
-  categoryId: number;
-  description: string;
-  status: string;
-}
-
-const products = ref<Product[]>([]);
-
-// Fetch products
-const fetchProducts = async () => {
-  try {
-    const response = await api.get("/product");
-    products.value = response.data;
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  }
-};
-
-//Delete product
-const deleteProduct = async (id: number) => {
-  if (confirm("Are you sure you want to delete this product?")) {
-    try {
-      await api.delete(`/product/delete/${id}`);
-      fetchProducts();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  }
-};
-
-onMounted(() => {
-  fetchProducts();
-});
-</script>
 
 <style scoped>
 .container {

@@ -39,7 +39,7 @@ export default defineComponent({
 .main-content {
   flex: 1;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
   min-height: 100vh;
 }
 </style>
