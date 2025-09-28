@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Product from "../pages/Product.vue";
-import Category from "../pages/Category.vue";
-import Brand from "../pages/Brand.vue";
+import Product from "../pages/product.vue";
+import Category from "../pages/category.vue";
+import Brand from "../pages/crand.vue";
 import AddProduct from "../pages/addProduct.vue";
 import EditProduct from "../pages/editProduct.vue";
 import AddBrand from "../pages/addBrand.vue";
