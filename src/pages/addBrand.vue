@@ -1,154 +1,81 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 import api from "../axios";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-// Form fields
 const name = ref("");
-const code = ref("");
-const brandId = ref<number | null>(null);
-const categoryId = ref<number | null>(null);
-const description = ref("");
+const code = ref(""); 
 const status = ref("Available");
 
-// Handle form submit
 const submitForm = async () => {
-  if (!name.value || !code.value || !brandId.value || !categoryId.value) {
+  if (!name.value || !code.value || !status.value) {
     alert("Please fill all required fields!");
     return;
   }
 
   try {
-    await api.post("/product/add", {
+    const newBrand = {
       name: name.value,
       code: code.value,
-      brandId: brandId.value,
-      categoryId: categoryId.value,
-      description: description.value,
       status: status.value,
-    });
-    alert("Product added successfully!");
-    router.push("/product");
+    };
+    await api.post("/brand/add", newBrand);
+    alert("Brand added successfully!");
+
+    // Reset form fields
+    name.value = "";
+    code.value = "";
+    status.value = "Available";
+
+    router.push("/brand");
   } catch (error) {
-    console.error("Error adding product:", error);
-    alert("Failed to add product.");
+    console.error("Error adding brand:", error);
+    alert("Failed to add brand. Please try again.");
   }
 };
 </script>
 
-
 <template>
   <div class="form-container">
-    <!-- Header Section -->
+    <!--Header Section-->
     <div class="form-header">
-      <div class="header-icon">📦</div>
-      <h1 class="form-title">Add New Product</h1>
-      <p class="form-subtitle">Fill in the details to create a new product</p>
+      <i class="fas fa-plus-circle header-icon"></i>
+      <h1 class="form-title">Add New Brand</h1>
+      <p class="form-subtitle">
+        Create a new brand by filling out the form below.
+      </p>
     </div>
 
-    <form @submit.prevent="submitForm" class="product-form">
-      <!-- Basic Information Card -->
+    <form @submit.prevent="submitForm" class="brand-form">
+      <!-- Brand Details Card -->
       <div class="form-card">
         <div class="card-header">
-          <span class="card-icon">📝</span>
-          <h2 class="card-title">Basic Information</h2>
+          <i class="fas fa-info-circle card-icon"></i>
+          <h2 class="card-title">Brand Details</h2>
         </div>
-        
         <div class="form-grid">
           <div class="input-group">
-            <label class="input-label">
-              Product Name <span class="required">*</span>
-            </label>
-            <input
-              v-model="name"
-              type="text"
-              class="form-input"
-              placeholder="Enter product name"
-            />
-            <span class="input-icon">🏷️</span>
+            <label for="brandName" class="input-label">Brand Name <span class="required">*</span></label>
+            <input type="text" id="brandName" v-model="name" required class="form-input" placeholder="Enter brand name" />
+            <i class="fas fa-tag input-icon"></i>
           </div>
 
           <div class="input-group">
-            <label class="input-label">
-              Product Code <span class="required">*</span>
-            </label>
-            <input
-              v-model="code"
-              type="text"
-              class="form-input"
-              placeholder="Enter unique code"
-            />
-            <span class="input-icon">🔢</span>
+            <label for="brandCode" class="input-label">Brand Code <span class="required">*</span></label>
+            <input type="text" id="brandCode" v-model="code" required class="form-input" placeholder="Enter brand code" />
+            <i class="fas fa-barcode input-icon"></i>
           </div>
         </div>
       </div>
 
-      <!-- Category & Brand Card -->
+      <!-- Brand Status Card -->
       <div class="form-card">
         <div class="card-header">
-          <span class="card-icon">🏷️</span>
-          <h2 class="card-title">Category & Brand</h2>
+          <i class="fas fa-image card-icon"></i>
+          <h2 class="card-title">Brand Status</h2>
         </div>
-        
-        <div class="form-grid">
-          <div class="input-group">
-            <label class="input-label">
-              Brand ID <span class="required">*</span>
-            </label>
-            <div class="input-with-button">
-              <input
-                v-model.number="brandId"
-                type="number"
-                class="form-input"
-                placeholder="Enter brand ID"
-              />
-              <button type="button" class="browse-button" title="Browse brands">
-                📋
-              </button>
-            </div>
-          </div>
-
-          <div class="input-group">
-            <label class="input-label">
-              Category ID <span class="required">*</span>
-            </label>
-            <div class="input-with-button">
-              <input
-                v-model.number="categoryId"
-                type="number"
-                class="form-input"
-                placeholder="Enter category ID"
-              />
-              <button type="button" class="browse-button" title="Browse categories">
-                📋
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Additional Details Card -->
-      <div class="form-card">
-        <div class="card-header">
-          <span class="card-icon">📋</span>
-          <h2 class="card-title">Additional Details</h2>
-        </div>
-        
-        <div class="input-group">
-          <label class="input-label">Description</label>
-          <div class="textarea-container">
-            <textarea
-              v-model="description"
-              class="form-textarea"
-              placeholder="Enter product description..."
-              rows="4"
-            ></textarea>
-            <span class="char-count">{{ description.length }}/500</span>
-          </div>
-        </div>
-
         <div class="input-group">
           <label class="input-label">Status</label>
           <div class="status-selector">
@@ -172,19 +99,18 @@ const submitForm = async () => {
 
       <!-- Form Actions -->
       <div class="form-actions">
-        <router-link to="/product" class="cancel-button">
+        <router-link to="/brand" class="cancel-button">
           <span class="button-icon">←</span>
-          Back to Products
+          Back to Brands
         </router-link>
         <div class="action-buttons">
           <button type="submit" class="submit-button">
             <span class="button-icon">+</span>
-            Add Product
+            Add Brand
           </button>
         </div>
       </div>
     </form>
-
   </div>
 </template>
 
@@ -194,7 +120,7 @@ const submitForm = async () => {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Header Styles */
@@ -313,10 +239,9 @@ const submitForm = async () => {
   top: 50%;
   transform: translateY(-50%);
   color: #9ca3af;
-  
 }
 
-/* Input with Button */ 
+/* Input with Button */
 .input-with-button {
   position: relative;
   display: flex;
@@ -484,26 +409,27 @@ const submitForm = async () => {
   .form-container {
     padding: 1rem;
   }
-  
+
   .form-actions {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .action-buttons {
     width: 100%;
     justify-content: stretch;
   }
-  
-  .draft-button, .submit-button {
+
+  .draft-button,
+  .submit-button {
     flex: 1;
     justify-content: center;
   }
-  
+
   .progress-steps {
     gap: 1rem;
   }
-  
+
   .step-label {
     font-size: 0.8rem;
   }

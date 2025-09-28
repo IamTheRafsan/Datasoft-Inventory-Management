@@ -1,9 +1,14 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Product from "../Pages/Product.vue";
-import Category from "../Pages/Category.vue";
-import Brand from "../Pages/Brand.vue";
+import Product from "../pages/Product.vue";
+import Category from "../pages/Category.vue";
+import Brand from "../pages/Brand.vue";
 import AddProduct from "../pages/addProduct.vue";
 import EditProduct from "../pages/editProduct.vue";
+import AddBrand from "../pages/addBrand.vue";
+import EditBrand from "../pages/editBrand.vue";
+import AddCategory from "../pages/addCategory.vue";
+import EditCategory from "../pages/editCategory.vue";
+
 
 
 // Define route objects with type
@@ -33,6 +38,27 @@ const routes: Array<RouteRecordRaw> = [
   name: "EditProduct",
   component: EditProduct
   },
+  {
+    path: "/addBrand",
+    name: "AddBrand",
+    component: AddBrand,
+  },
+  {
+  path: "/editBrand/:id",
+  name: "EditBrand",
+  component: EditBrand,
+  },
+  {
+    path: "/addCategory",
+    name: "AddCategory",
+    component: AddCategory,
+  },
+  {
+  path: "/editCategory/:id",
+  name: "EditCategory",
+  component: EditCategory,
+  },
+
   {
     path: "/",
     redirect: "/product",

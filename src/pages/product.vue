@@ -1,47 +1,3 @@
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-import api from "../axios";
-
-interface Product {
-  id?: number;
-  name: string;
-  code: string;
-  brandId: number;
-  categoryId: number;
-  description: string;
-  status: string;
-}
-
-const products = ref<Product[]>([]);
-
-// Fetch products
-const fetchProducts = async () => {
-  try {
-    const response = await api.get("/product");
-    products.value = response.data;
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  }
-};
-
-
-//Delete product
-const deleteProduct = async (id: number) => {
-  if (confirm("Are you sure you want to delete this product?")) {
-    try {
-      await api.delete(`/product/delete/${id}`);
-      fetchProducts();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  }
-};
-
-onMounted(() => {
-  fetchProducts();
-});
-</script>
-
 <template>
   <div class="container">
     <!-- Header Section -->
@@ -82,9 +38,9 @@ onMounted(() => {
         </thead>
         <tbody>
           <tr
-            v-for="(p, index) in products"
+            v-for="(p, i) in products"
             :key="p.id"
-            :class="['table-row', { 'even-row': index % 2 === 0 }]"
+            :class="['table-row', { 'even-row': i % 2 === 0 }]"
           >
             <td class="table-cell id-cell">{{ p.id }}</td>
             <td class="table-cell name-cell">{{ p.name }}</td>
@@ -97,7 +53,7 @@ onMounted(() => {
               <span
                 :class="[
                   'status-badge',
-                  p.status === 'ACTIVE' ? 'status-active' : 'status-inactive',
+                  p.status === 'Available' ? 'status-active' : 'status-inactive',
                 ]"
               >
                 {{ p.status }}
@@ -135,11 +91,54 @@ onMounted(() => {
     <div class="footer-stats">
       <span class="stat-item">Total Products: {{ products.length }}</span>
       <span class="stat-item">
-        Active: {{ products.filter((p) => p.status === "ACTIVE").length }}
+        Active: {{ products.filter((p) => p.status === "Available").length }}
       </span>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import api from "../axios";
+
+interface Product {
+  id?: number;
+  name: string;
+  code: string;
+  brandId: number;
+  categoryId: number;
+  description: string;
+  status: string;
+}
+
+const products = ref<Product[]>([]);
+
+// Fetch products
+const fetchProducts = async () => {
+  try {
+    const response = await api.get("/product");
+    products.value = response.data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+};
+
+//Delete product
+const deleteProduct = async (id: number) => {
+  if (confirm("Are you sure you want to delete this product?")) {
+    try {
+      await api.delete(`/product/delete/${id}`);
+      fetchProducts();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  }
+};
+
+onMounted(() => {
+  fetchProducts();
+});
+</script>
 
 <style scoped>
 .container {
