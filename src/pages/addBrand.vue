@@ -58,13 +58,13 @@ const submitForm = async () => {
         <div class="form-grid">
           <div class="input-group">
             <label for="brandName" class="input-label">Brand Name <span class="required">*</span></label>
-            <input type="text" id="brandName" v-model="name" required class="form-input" placeholder="Enter brand name" />
+            <input type="text" id="brandName" v-model="name" class="form-input" placeholder="Enter brand name" />
             <i class="fas fa-tag input-icon"></i>
           </div>
 
           <div class="input-group">
             <label for="brandCode" class="input-label">Brand Code <span class="required">*</span></label>
-            <input type="text" id="brandCode" v-model="code" required class="form-input" placeholder="Enter brand code" />
+            <input type="text" id="brandCode" v-model="code" class="form-input" placeholder="Enter brand code" />
             <i class="fas fa-barcode input-icon"></i>
           </div>
         </div>

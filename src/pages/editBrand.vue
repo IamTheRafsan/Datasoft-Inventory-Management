@@ -120,7 +120,6 @@ onMounted(() => {
               type="text"
               class="form-input"
               placeholder="Enter unique code"
-              required
             />
             <span class="input-icon"></span>
           </div>
