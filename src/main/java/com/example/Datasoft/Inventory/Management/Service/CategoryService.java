@@ -1,6 +1,8 @@
 package com.example.Datasoft.Inventory.Management.Service;
 
 
+import com.example.Datasoft.Inventory.Management.Dto.CategoryDto;
+import com.example.Datasoft.Inventory.Management.Dto.CategoryUpdateDto;
 import com.example.Datasoft.Inventory.Management.Entity.Brand;
 import com.example.Datasoft.Inventory.Management.Entity.Category;
 import com.example.Datasoft.Inventory.Management.Repository.CategoryRepository;
@@ -20,12 +22,16 @@ public class CategoryService {
     }
 
     //Create category
-    public Category addCategory(Category category){
+    public Category addCategory(CategoryDto dto){
 
-        category.setUpdatedAt(LocalDateTime.now());
-        if(category.getCreatedAt() == null){
-            category.setCreatedAt(LocalDateTime.now());
-        }
+        Category category = new Category();
+        category.setName(dto.getName());
+        category.setCode(dto.getCode());
+
+        LocalDateTime now = LocalDateTime.now();
+        category.setCreatedAt(now);
+        category.setUpdatedAt(now);
+
         return categoryRepository.save(category);
 
     }
@@ -43,23 +49,24 @@ public class CategoryService {
     }
 
     //update category
-    public Category updateCategory(Long id, Category updatedCategory){
+    public Category updateCategory(Long id, CategoryUpdateDto dto) {
         return categoryRepository.findById(id)
                 .map(existingCategory -> {
-                    if (updatedCategory.getName() != null) {
-                        existingCategory.setName(updatedCategory.getName());
+                    if (dto.getName() != null) {
+                        existingCategory.setName(dto.getName());
                     }
-                    if (updatedCategory.getCode() != null) {
-                        existingCategory.setCode(updatedCategory.getCode());
+                    if (dto.getCode() != null) {
+                        existingCategory.setCode(dto.getCode());
                     }
 
-                    updatedCategory.setUpdatedAt(java.time.LocalDateTime.now());
+                    // Set the updatedAt timestamp on the entity
+                    existingCategory.setUpdatedAt(LocalDateTime.now());
 
                     return categoryRepository.save(existingCategory);
                 })
                 .orElseThrow(() -> new RuntimeException("Category not found with id " + id));
-
     }
+
 
     //delete Category
     public boolean deleteCategory(Long id){

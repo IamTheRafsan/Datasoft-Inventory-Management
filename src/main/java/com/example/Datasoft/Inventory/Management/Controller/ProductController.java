@@ -1,14 +1,18 @@
 package com.example.Datasoft.Inventory.Management.Controller;
 
+import com.example.Datasoft.Inventory.Management.Dto.ProductDto;
+import com.example.Datasoft.Inventory.Management.Dto.ProductUpdateDto;
 import com.example.Datasoft.Inventory.Management.Entity.Products;
 import com.example.Datasoft.Inventory.Management.Service.ProductService;
 import com.mysql.cj.x.protobuf.Mysqlx;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/inventory/product")
 public class ProductController {
@@ -21,8 +25,8 @@ public class ProductController {
 
     // Add a product
     @PostMapping("/add")
-    public ResponseEntity<Products> createProduct(@RequestBody Products product) {
-        Products savedProduct = productService.addProduct(product);
+    public ResponseEntity<Products> createProduct(@Valid @RequestBody ProductDto dto) {
+        Products savedProduct = productService.addProduct(dto);
         return ResponseEntity.ok(savedProduct);
     }
 
@@ -40,8 +44,8 @@ public class ProductController {
 
     //Update Product by id
     @PutMapping("/update/{id}")
-    public ResponseEntity<Products> updateProduct(@PathVariable Long id, @RequestBody Products product) {
-        return ResponseEntity.ok(productService.updateProduct(id, product));
+    public ResponseEntity<Products> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateDto dto) {
+        return ResponseEntity.ok(productService.updateProduct(id, dto));
     }
 
     //Delete product by id

@@ -1,8 +1,11 @@
 package com.example.Datasoft.Inventory.Management.Service;
 
 
+import com.example.Datasoft.Inventory.Management.Dto.ProductDto;
 import com.example.Datasoft.Inventory.Management.Entity.Products;
 import com.example.Datasoft.Inventory.Management.Repository.ProductRepository;
+import com.example.Datasoft.Inventory.Management.Dto.ProductUpdateDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,14 +22,20 @@ public class ProductService {
     }
 
     //Add a product
-    public Products addProduct(Products product) {
+    public Products addProduct(ProductDto dto) {
 
+        Products product = new Products(
+                dto.getName(),
+                dto.getCode(),
+                dto.getBrandId(),
+                dto.getCategoryId(),
+                dto.getDescription(),
+                dto.getStatus()
+        );
+        product.setCreatedAt(LocalDateTime.now());
         product.setUpdatedAt(LocalDateTime.now());
-        if (product.getCreatedAt() == null) {
-            product.setCreatedAt(LocalDateTime.now());
-        }
-        return productRepository.save(product);
 
+        return productRepository.save(product);
     }
 
 
@@ -41,30 +50,17 @@ public class ProductService {
     }
 
     // Update product
-    public Products updateProduct(Long id, Products updatedProduct) {
+    public Products updateProduct(Long id, ProductUpdateDto dto) {
         return productRepository.findById(id)
                 .map(existingProduct -> {
-                    if (updatedProduct.getName() != null) {
-                        existingProduct.setName(updatedProduct.getName());
-                    }
-                    if (updatedProduct.getCode() != null) {
-                        existingProduct.setCode(updatedProduct.getCode());
-                    }
-                    if (updatedProduct.getBrandId() != null) {
-                        existingProduct.setBrandId(updatedProduct.getBrandId());
-                    }
-                    if (updatedProduct.getCategoryId() != null) {
-                        existingProduct.setCategoryId(updatedProduct.getCategoryId());
-                    }
-                    if (updatedProduct.getDescription() != null) {
-                        existingProduct.setDescription(updatedProduct.getDescription());
-                    }
-                    if (updatedProduct.getStatus() != null) {
-                        existingProduct.setStatus(updatedProduct.getStatus());
-                    }
+                    if (dto.getName() != null) existingProduct.setName(dto.getName());
+                    if (dto.getCode() != null) existingProduct.setCode(dto.getCode());
+                    if (dto.getBrandId() != null) existingProduct.setBrandId(dto.getBrandId());
+                    if (dto.getCategoryId() != null) existingProduct.setCategoryId(dto.getCategoryId());
+                    if (dto.getDescription() != null) existingProduct.setDescription(dto.getDescription());
+                    if (dto.getStatus() != null) existingProduct.setStatus(dto.getStatus());
 
                     existingProduct.setUpdatedAt(java.time.LocalDateTime.now());
-
                     return productRepository.save(existingProduct);
                 })
                 .orElseThrow(() -> new RuntimeException("Product not found with id " + id));

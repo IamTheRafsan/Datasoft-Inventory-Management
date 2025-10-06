@@ -1,10 +1,13 @@
 package com.example.Datasoft.Inventory.Management.Controller;
 
 
+import com.example.Datasoft.Inventory.Management.Dto.CategoryDto;
+import com.example.Datasoft.Inventory.Management.Dto.CategoryUpdateDto;
 import com.example.Datasoft.Inventory.Management.Entity.Brand;
 import com.example.Datasoft.Inventory.Management.Entity.Category;
 import com.example.Datasoft.Inventory.Management.Service.BrandService;
 import com.example.Datasoft.Inventory.Management.Service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/inventory/category")
 public class CategoryController {
@@ -24,8 +28,8 @@ public class CategoryController {
 
     //add category
     @PostMapping("/add")
-    public ResponseEntity<Category> addCategory(@RequestBody Category category){
-        Category savedCategory = categoryService.addCategory(category); // save through service
+    public ResponseEntity<Category> addCategory(@Valid @RequestBody CategoryDto dto){
+        Category savedCategory = categoryService.addCategory(dto);
         return ResponseEntity.ok(savedCategory);
     }
 
@@ -47,8 +51,8 @@ public class CategoryController {
 
     //update category
     @PutMapping("/update/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category){
-        return ResponseEntity.ok(categoryService.updateCategory(id, category));
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryUpdateDto dto){
+        return ResponseEntity.ok(categoryService.updateCategory(id, dto));
     }
 
     //delete category

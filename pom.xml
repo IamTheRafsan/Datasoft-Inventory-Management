@@ -54,6 +54,13 @@
 			<version>9.2.0</version>
 		</dependency>
 
+		<!--Validation Dependency-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+
 
 	</dependencies>
 
