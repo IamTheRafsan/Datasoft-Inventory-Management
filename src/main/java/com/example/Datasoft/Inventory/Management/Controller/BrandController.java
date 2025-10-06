@@ -1,31 +1,32 @@
 package com.example.Datasoft.Inventory.Management.Controller;
 
 
+import com.example.Datasoft.Inventory.Management.Dto.BrandDto;
+import com.example.Datasoft.Inventory.Management.Dto.BrandUpdateDto;
 import com.example.Datasoft.Inventory.Management.Entity.Brand;
-import com.example.Datasoft.Inventory.Management.Entity.Products;
 import com.example.Datasoft.Inventory.Management.Service.BrandService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/inventory/brand")
-public class BandController {
+public class BrandController {
 
     private final BrandService brandService;
 
-    public BandController(BrandService brandService) {
+    public BrandController(BrandService brandService) {
         this.brandService = brandService;
     }
 
     //add brand
     @PostMapping("/add")
-    public ResponseEntity<Brand> createBrand(@RequestBody Brand brand){
-        Brand savedBrand = brandService.addBrand(brand);
-        return ResponseEntity.ok(brand);
+    public ResponseEntity<Brand> createBrand(@Valid @RequestBody BrandDto dto) {
+        Brand savedBrand = brandService.addBrand(dto);
+        return ResponseEntity.ok(savedBrand);
     }
 
     //get all brands
@@ -44,8 +45,8 @@ public class BandController {
 
     //update brand
     @PutMapping("/update/{id}")
-    public ResponseEntity<Brand> updateBrand(@PathVariable Long id, @RequestBody Brand brand) {
-        return ResponseEntity.ok(brandService.updateBrand(id, brand));
+    public ResponseEntity<Brand> updateBrand(@PathVariable Long id, @Valid @RequestBody BrandUpdateDto dto) {
+        return ResponseEntity.ok(brandService.updateBrand(id, dto));
     }
 
     //delete brand

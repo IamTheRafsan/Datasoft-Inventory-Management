@@ -1,6 +1,8 @@
 package com.example.Datasoft.Inventory.Management.Service;
 
 
+import com.example.Datasoft.Inventory.Management.Dto.BrandDto;
+import com.example.Datasoft.Inventory.Management.Dto.BrandUpdateDto;
 import com.example.Datasoft.Inventory.Management.Entity.Brand;
 import com.example.Datasoft.Inventory.Management.Entity.Products;
 import com.example.Datasoft.Inventory.Management.Repository.BrandRepository;
@@ -22,14 +24,18 @@ public class BrandService {
 
 
     //Add a brand
-    public Brand addBrand(Brand brand) {
+    public Brand addBrand(BrandDto dto) {
 
-        brand.setUpdatedAt(LocalDateTime.now());
-        if(brand.getCreatedAt() == null) {
-            brand.setCreatedAt(LocalDateTime.now());
-        }
+        Brand brand = new Brand();
+        brand.setName(dto.getName());
+        brand.setCode(dto.getCode());
+        brand.setStatus(dto.getStatus());
+
+        LocalDateTime now = LocalDateTime.now();
+        brand.setCreatedAt(now);
+        brand.setUpdatedAt(now);
+
         return brandRepository.save(brand);
-
     }
 
     //Get all brands
@@ -47,20 +53,20 @@ public class BrandService {
     }
 
     //update brand by id
-    public Brand updateBrand(Long id, Brand updatedBrand){
+    public Brand updateBrand(Long id, BrandUpdateDto dto){
         return brandRepository.findById(id)
                 .map(existingBrand -> {
-                    if (updatedBrand.getName() != null) {
-                        existingBrand.setName(updatedBrand.getName());
+                    if (dto.getName() != null) {
+                        existingBrand.setName(dto.getName());
                     }
-                    if (updatedBrand.getCode() != null) {
-                        existingBrand.setCode(updatedBrand.getCode());
+                    if (dto.getCode() != null) {
+                        existingBrand.setCode(dto.getCode());
                     }
-                    if (updatedBrand.getStatus() != null) {
-                        existingBrand.setStatus(updatedBrand.getStatus());
+                    if (dto.getStatus() != null) {
+                        existingBrand.setStatus(dto.getStatus());
                     }
 
-                    existingBrand.setUpdatedAt(java.time.LocalDateTime.now());
+                    existingBrand.setUpdatedAt(LocalDateTime.now());
 
                     return brandRepository.save(existingBrand);
                 })
